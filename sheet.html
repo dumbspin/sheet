@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python + DSA roadmap calendar</title>
+<style>
+  :root {
+    --bg: #FAF9F6;
+    --card: #FFFFFF;
+    --border: #E4E1D8;
+    --text: #26211A;
+    --text-secondary: #6B6459;
+    --text-muted: #9C9587;
+
+    --py-bg: #EEEDFE;    --py-text: #3C3489;    --py-strong:#534AB7;
+    --found-bg: #E1F5EE; --found-text: #085041;  --found-strong:#0F6E56;
+    --list-bg: #FAECE7;  --list-text: #712B13;   --list-strong:#993C1D;
+    --tree-bg: #FBEAF0;  --tree-text: #72243E;   --tree-strong:#993556;
+    --graph-bg: #E6F1FB; --graph-text: #0C447C;  --graph-strong:#185FA5;
+    --fin-bg: #FAEEDA;   --fin-text: #633806;    --fin-strong:#854F0B;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    padding: 32px 20px 80px;
+  }
+
+  .wrap { max-width: 920px; margin: 0 auto; }
+
+  h1 {
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0 0 6px;
+  }
+
+  .subtitle {
+    color: var(--text-secondary);
+    font-size: 14px;
+    margin: 0 0 24px;
+  }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 32px;
+    padding: 12px 16px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+  }
+
+  .legend span { display: flex; align-items: center; gap: 6px; }
+
+  .swatch { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+
+  .month-title {
+    font-size: 17px;
+    font-weight: 600;
+    margin: 32px 0 10px;
+  }
+
+  .weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+  }
+
+  .day {
+    border-radius: 10px;
+    padding: 10px 8px;
+    min-height: 78px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: transform 0.1s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    position: relative;
+  }
+
+  .day:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+  }
+
+  .day:focus-visible {
+    outline: 2px solid var(--graph-strong);
+    outline-offset: 2px;
+  }
+
+  .day .top-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 6px;
+  }
+
+  .day .num { font-size: 13px; font-weight: 600; }
+  .day .label { font-size: 11.5px; line-height: 1.3; }
+  .day.blank { visibility: hidden; }
+
+  .day.completed { opacity: 0.55; }
+  .day.completed .label { text-decoration: line-through; }
+
+  .day-check {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    accent-color: var(--graph-strong);
+    flex-shrink: 0;
+    margin: 0;
+  }
+
+  .progress-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 24px;
+    padding: 12px 16px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+  }
+
+  .progress-track {
+    flex: 1;
+    height: 8px;
+    background: var(--bg);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--graph-strong);
+    border-radius: 999px;
+    transition: width 0.2s ease;
+  }
+
+  .progress-count {
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+  }
+
+  .reset-link {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 12.5px;
+    cursor: pointer;
+    text-decoration: underline;
+    padding: 0;
+    white-space: nowrap;
+  }
+
+  .reset-link:hover { color: var(--text-secondary); }
+
+  .cat-py    { background: var(--py-bg);    color: var(--py-text); }
+  .cat-found { background: var(--found-bg); color: var(--found-text); }
+  .cat-list  { background: var(--list-bg);  color: var(--list-text); }
+  .cat-tree  { background: var(--tree-bg);  color: var(--tree-text); }
+  .cat-graph { background: var(--graph-bg); color: var(--graph-text); }
+  .cat-fin   { background: var(--fin-bg);   color: var(--fin-text); }
+
+  /* Modal */
+  .overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(38, 33, 26, 0.45);
+    align-items: flex-start;
+    justify-content: center;
+    padding: 5vh 16px;
+    overflow-y: auto;
+    z-index: 100;
+  }
+
+  .overlay.open { display: flex; }
+
+  .modal {
+    background: var(--card);
+    border-radius: 14px;
+    max-width: 620px;
+    width: 100%;
+    padding: 28px 28px 24px;
+    position: relative;
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+    cursor: pointer;
+    color: var(--text-secondary);
+  }
+
+  .modal-close:hover { background: var(--bg); }
+
+  .modal-eyebrow {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 4px 10px;
+    border-radius: 999px;
+    display: inline-block;
+    margin-bottom: 12px;
+  }
+
+  .modal h2 {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0 0 20px;
+    padding-right: 40px;
+  }
+
+  .modal-complete-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: -8px 0 20px;
+    font-size: 14px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .modal-complete-row input {
+    width: 17px;
+    height: 17px;
+    cursor: pointer;
+    accent-color: var(--graph-strong);
+    margin: 0;
+  }
+
+  .modal h3 {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--text-muted);
+    margin: 20px 0 8px;
+  }
+
+  .modal h3:first-of-type { margin-top: 0; }
+
+  .modal ul {
+    margin: 0;
+    padding-left: 20px;
+  }
+
+  .modal li { margin-bottom: 5px; font-size: 14.5px; }
+
+  .modal a {
+    color: var(--graph-strong);
+    text-decoration: none;
+  }
+
+  .modal a:hover { text-decoration: underline; }
+
+  .resource-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    font-size: 14.5px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .resource-item a { white-space: nowrap; }
+
+  .resource-item:last-child { border-bottom: none; }
+
+  .resource-name { color: var(--text); }
+
+  .resource-note {
+    font-size: 12.5px;
+    color: var(--text-muted);
+    font-weight: 400;
+  }
+
+  footer {
+    max-width: 920px;
+    margin: 40px auto 0;
+    font-size: 13px;
+    color: var(--text-muted);
+    border-top: 1px solid var(--border);
+    padding-top: 16px;
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <h1>Python + DSA roadmap</h1>
+  <p class="subtitle">July 26 – August 31, 2026 &middot; click any day for the full breakdown, check it off when done</p>
+
+  <div class="progress-bar">
+    <span class="progress-count" id="progressCount">0 / 37 days done</span>
+    <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%;"></div></div>
+    <button class="reset-link" id="resetBtn">Reset progress</button>
+  </div>
+
+  <div class="legend">
+    <span><span class="swatch" style="background:var(--py-strong)"></span>Python brush-up</span>
+    <span><span class="swatch" style="background:var(--found-strong)"></span>Arrays & search</span>
+    <span><span class="swatch" style="background:var(--list-strong)"></span>Lists & recursion</span>
+    <span><span class="swatch" style="background:var(--tree-strong)"></span>Trees & stacks</span>
+    <span><span class="swatch" style="background:var(--graph-strong)"></span>Graphs & DP</span>
+    <span><span class="swatch" style="background:var(--fin-strong)"></span>Final review</span>
+  </div>
+
+  <p class="month-title">July 2026</p>
+  <div class="weekdays"><div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div></div>
+  <div class="grid" id="julGrid"></div>
+
+  <p class="month-title">August 2026</p>
+  <div class="weekdays"><div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div></div>
+  <div class="grid" id="augGrid"></div>
+</div>
+
+<footer>Core spine: Striver's A2Z DSA Sheet (takeuforward.org). Supplement with Abdul Bari, NeetCode, Corey Schafer, and freeCodeCamp whenever a concept needs another explanation.</footer>
+
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <button class="modal-close" id="closeBtn" aria-label="Close">&times;</button>
+    <span class="modal-eyebrow" id="modalEyebrow"></span>
+    <h2 id="modalTitle"></h2>
+
+    <label class="modal-complete-row" for="modalCheck">
+      <input type="checkbox" id="modalCheck">
+      <span id="modalCheckLabel">Mark this day as done</span>
+    </label>
+
+    <h3>Topics to cover</h3>
+    <ul id="modalTopics"></ul>
+
+    <h3>Free resources</h3>
+    <div id="modalResources"></div>
+
+    <h3>Today's tasks</h3>
+    <ul id="modalTasks"></ul>
+  </div>
+</div>
+
+<script>
+const cat = {
+  py:    { label: 'Python brush-up',   bg: 'var(--py-bg)',    text: 'var(--py-text)' },
+  found: { label: 'Arrays & search',   bg: 'var(--found-bg)', text: 'var(--found-text)' },
+  list:  { label: 'Lists & recursion', bg: 'var(--list-bg)',  text: 'var(--list-text)' },
+  tree:  { label: 'Trees & stacks',    bg: 'var(--tree-bg)',  text: 'var(--tree-text)' },
+  graph: { label: 'Graphs & DP',       bg: 'var(--graph-bg)', text: 'var(--graph-text)' },
+  fin:   { label: 'Final review',      bg: 'var(--fin-bg)',   text: 'var(--fin-text)' }
+};
+
+function V(resource, note) {
+  return { name: resource.name, url: resource.url, note: note };
+}
+
+const R = {
+  fcc: { name: 'freeCodeCamp – Python Full Course', url: 'https://www.youtube.com/watch?v=rfscVS0vtbw' },
+  w3: { name: 'W3Schools Python', url: 'https://www.w3schools.com/python/' },
+  corey: { name: "Corey Schafer's Python Beginner playlist", url: 'https://www.youtube.com/playlist?list=PLHvgCDEDL_ZfHZZkuU8Duevx4B7cGCVWq' },
+  coreyFn: { name: 'Corey Schafer – Python Tutorial 8: Functions', url: 'https://www.youtube.com/watch?v=9Os0o3wzS_I' },
+  coreyOOP: { name: "Corey Schafer's Python OOP playlist", url: 'https://www.youtube.com/playlist?list=PL-osiE80TeTsqhIuOqKhwlXsIBIdSeYtc' },
+  pydocs: { name: 'Python official docs – functions', url: 'https://docs.python.org/3/tutorial/controlflow.html#defining-functions' },
+  abdul: { name: "Abdul Bari's DSA playlist", url: 'https://www.youtube.com/playlist?list=PLDN4rrl48XKpZkf03iYFl-O29szjTrs_O' },
+  striver: { name: "Striver's A2Z DSA Sheet", url: 'https://takeuforward.org/strivers-a2z-dsa-course/strivers-a2z-dsa-course-sheet-2/' },
+  leetcode: { name: 'LeetCode (practice + submit)', url: 'https://leetcode.com' },
+  neetcode: { name: 'NeetCode', url: 'https://neetcode.io' }
+};
+
+const july = [
+  { d:26, dow:0, cat:'py', label:'Syntax & data types',
+    topics:['Variables and data types (int, float, str, bool)','Type casting','Operators (arithmetic, comparison, logical)','Input/output','String formatting with f-strings'],
+    resources:[V(R.fcc, 'Watch from the start through "Variables & Data Types" and "Working With Strings/Numbers" (roughly the first 45–60 min)'), R.w3],
+    tasks:['Swap two numbers without a temp variable','Check even/odd','Simple interest calculator','Temperature converter (C to F and back)','5 more small scripts practicing input/output and f-strings'] },
+  { d:27, dow:1, cat:'py', label:'Strings & control flow',
+    topics:['String slicing','String methods: split, join, strip, replace, find','if-elif-else','for and while loops','break and continue','Nested loops'],
+    resources:[R.w3, V(R.corey, 'Videos #2 (Strings), #6 (Conditionals & Booleans), and #7 (Loops & Iterations)')],
+    tasks:['Palindrome checker','Pattern printing (pyramid, triangle of stars)','FizzBuzz','Count vowels in a string'] },
+  { d:28, dow:2, cat:'py', label:'Lists, sets, dicts',
+    topics:['List methods: append, pop, sort, reverse, slicing','Tuples and immutability','Sets: union, intersection','Dict methods: get, items, keys, values','List and dict comprehensions'],
+    resources:[R.w3, V(R.corey, 'Videos #4 (Lists, Tuples, and Sets) and #5 (Dictionaries)')],
+    tasks:['Merge two dictionaries','Find duplicates in a list','Word-frequency counter using a dict','10 one-line list comprehension exercises'] },
+  { d:29, dow:3, cat:'py', label:'Functions & recursion',
+    topics:['Function definitions','Default and keyword arguments','*args and **kwargs','Lambda functions','map, filter, reduce','Recursion basics'],
+    resources:[V(R.coreyFn, 'Video #8 in the Python Beginner series — watch this one in full'), R.pydocs],
+    tasks:['Factorial (loop version and recursive version)','Fibonacci (loop version and recursive version)','Sum of digits','GCD using recursion'] },
+  { d:30, dow:4, cat:'py', label:'OOP in Python',
+    topics:['Classes and objects','__init__','Instance variables vs class variables','Inheritance','self','Basic dunder methods (__str__, __repr__)'],
+    resources:[V(R.coreyOOP, 'Videos #1 (Classes and Instances), #2 (Class Variables), #4 (Inheritance), and #5 (Special/Dunder Methods)')],
+    tasks:['Build a small Student class with attributes and methods','Create a subclass that inherits from it','Override __str__ to print a readable summary'] },
+  { d:31, dow:5, cat:'py', label:'Exceptions, files, Big-O',
+    topics:['try/except/finally','Custom exceptions','Reading and writing files','Big-O notation basics: O(1), O(n), O(log n), O(n²)'],
+    resources:[R.w3, V(R.abdul, 'Videos #11–13: "Asymptotic Notations Big-O/Omega/Theta #1 and #2" and "Properties of Asymptotic Notations"')],
+    tasks:['Write a script with proper exception handling for a divide-by-zero case','Watch videos #11-13 on Big-O','Write, in your own words, what O(n) and O(n²) mean with one example each'] }
+];
+
+const august = [
+  { d:1, dow:6, cat:'found', label:'Complexity & recursion',
+    topics:['Time and space complexity deep dive','Recursion recap from your Python brush-up'],
+    resources:[R.striver, V(R.abdul, 'Videos #1–16 for complexity recap; video #82 ("Tower of Hanoi") as a classic recursion example')],
+    tasks:['Solve 5 basic recursion problems from the Striver Basics section'] },
+  { d:2, dow:0, cat:'found', label:'Sorting algorithms',
+    topics:['Bubble sort','Selection sort','Insertion sort','Merge sort','Quick sort'],
+    resources:[V(R.abdul, 'Videos #32 (Heap Sort), #33–35 (Merge Sort), and #36–37 (QuickSort) — use Striver for bubble/selection/insertion'), R.striver],
+    tasks:["Implement all 5 sorting algorithms from scratch in Python (don't use .sort())"] },
+  { d:3, dow:1, cat:'found', label:'Arrays part 1',
+    topics:['Two pointers','Kadane\'s algorithm','Prefix sum'],
+    resources:[R.striver, R.leetcode],
+    tasks:['Solve 6-8 problems from the Striver Arrays section'] },
+  { d:4, dow:2, cat:'found', label:'Arrays part 2',
+    topics:['Dutch national flag algorithm','Next permutation','Rotate array'],
+    resources:[R.striver, R.leetcode],
+    tasks:['Solve 6-8 problems'] },
+  { d:5, dow:3, cat:'found', label:'Arrays part 3',
+    topics:['Subarray sum problems','Merge intervals','Majority element'],
+    resources:[R.striver, R.leetcode],
+    tasks:['Solve 5-6 medium/hard array problems'] },
+  { d:6, dow:4, cat:'found', label:'Binary search basics',
+    topics:['Standard binary search','First and last occurrence','Search in a rotated sorted array'],
+    resources:[R.striver, V(R.abdul, 'Videos #30 (iterative) and #31 (recursive) for the core algorithm')],
+    tasks:['Solve 8-10 binary search problems'] },
+  { d:7, dow:5, cat:'found', label:'Binary search on answers',
+    topics:['Allocate books problem','Painter\'s partition problem','Aggressive cows problem'],
+    resources:[R.striver],
+    tasks:['Revise the whole week','Redo 3 problems you struggled with, without looking at solutions'] },
+  { d:8, dow:6, cat:'list', label:'Strings basics',
+    topics:['Reverse words in a string','Anagram check','Isomorphic strings','String-to-integer conversion'],
+    resources:[R.striver, R.leetcode],
+    tasks:['Solve 6-8 string problems'] },
+  { d:9, dow:0, cat:'list', label:'Linked list part 1',
+    topics:['Build a singly linked list class from scratch','Reverse a linked list (iterative and recursive)','Detect a cycle (Floyd\'s algorithm)'],
+    resources:[R.striver, R.leetcode],
+    tasks:['Implement the class, then solve the 3 topic problems'] },
+  { d:10, dow:1, cat:'list', label:'Linked list part 2',
+    topics:['Merge two sorted linked lists','Remove Nth node from the end','Find the middle node','Add two numbers as linked lists'],
+    resources:[R.striver, R.leetcode],
+    tasks:['Solve 5-6 problems'] },
+  { d:11, dow:2, cat:'list', label:'Doubly LL & LRU cache',
+    topics:['Doubly linked list','LRU cache design (important interview question)'],
+    resources:[R.striver, R.leetcode],
+    tasks:['Solve 3-4 problems, including implementing LRU cache'] },
+  { d:12, dow:3, cat:'list', label:'Backtracking part 1',
+    topics:['Subsets','Permutations','Combination sum'],
+    resources:[R.striver, V(R.abdul, 'Videos #63 (Intro to Backtracking) and #65 (Sum of Subsets) build the core intuition')],
+    tasks:['Solve 5-6 problems'] },
+  { d:13, dow:4, cat:'list', label:'Backtracking part 2',
+    topics:['N-Queens','Sudoku solver','Palindrome partitioning'],
+    resources:[R.striver, V(R.abdul, 'Video #64 (N-Queens Problem using Backtracking)')],
+    tasks:['Solve 4-5 problems'] },
+  { d:14, dow:5, cat:'list', label:'Revision day',
+    topics:['Consolidate everything from linked lists and backtracking'],
+    resources:[R.leetcode],
+    tasks:['Redo the hardest 5 problems from this week cold, no notes','Re-watch Abdul Bari videos #63–67 for anything shaky'] },
+  { d:15, dow:6, cat:'tree', label:'Stack & queue basics',
+    topics:['Implement stack and queue using arrays/lists in Python','Valid parentheses','Next greater element'],
+    resources:[R.striver, R.leetcode],
+    tasks:['Solve 5-6 problems'] },
+  { d:16, dow:0, cat:'tree', label:'Monotonic stack',
+    topics:['Largest rectangle in histogram','Stock span problem'],
+    resources:[R.striver, R.leetcode],
+    tasks:['Solve 4-5 problems'] },
+  { d:17, dow:1, cat:'tree', label:'Sliding window & two pointer',
+    topics:['Max sum subarray of size k','Longest substring without repeating characters','Minimum window substring'],
+    resources:[R.striver, R.neetcode],
+    tasks:['Solve 5-6 problems'] },
+  { d:18, dow:2, cat:'tree', label:'Heaps',
+    topics:['Implement a min-heap and max-heap manually','Use Python\'s heapq module','Kth largest element','Top k frequent elements'],
+    resources:[R.striver, R.leetcode],
+    tasks:['Solve 5 problems'] },
+  { d:19, dow:3, cat:'tree', label:'Greedy algorithms',
+    topics:['Activity selection','Job sequencing','Fractional knapsack','Gas station problem'],
+    resources:[R.striver, V(R.abdul, 'Videos #39 (Intro), #40 (Knapsack), and #41 (Job Sequencing with Deadlines)')],
+    tasks:['Solve 5-6 problems'] },
+  { d:20, dow:4, cat:'tree', label:'Trees part 1',
+    topics:['Build a binary tree class','Preorder, inorder, postorder (recursive and iterative)','Level order traversal (BFS)'],
+    resources:[R.striver, R.leetcode],
+    tasks:['Solve 5-6 problems'] },
+  { d:21, dow:5, cat:'tree', label:'Trees part 2',
+    topics:['Height and diameter of a tree','Balanced tree check','Lowest common ancestor','Boundary and vertical traversal'],
+    resources:[R.striver, R.leetcode],
+    tasks:['Solve 5-6 problems'] },
+  { d:22, dow:6, cat:'graph', label:'Binary search trees',
+    topics:['Insert, delete, search in a BST','Validate BST','Kth smallest element','Floor and ceil in a BST'],
+    resources:[R.striver, R.leetcode],
+    tasks:['Solve 5-6 problems'] },
+  { d:23, dow:0, cat:'graph', label:'Graphs part 1',
+    topics:['Build an adjacency list','BFS','DFS','Number of islands','Flood fill'],
+    resources:[R.striver, V(R.abdul, 'Video #61: "Graph Traversals - BFS & DFS"')],
+    tasks:['Solve 5-6 problems'] },
+  { d:24, dow:1, cat:'graph', label:'Graphs part 2',
+    topics:['Cycle detection in directed graphs','Cycle detection in undirected graphs','Topological sort','Course schedule'],
+    resources:[R.striver, R.leetcode],
+    tasks:['Solve 4-5 problems'] },
+  { d:25, dow:2, cat:'graph', label:'Graphs part 3',
+    topics:['Dijkstra\'s algorithm','Shortest path problems','Union-find / disjoint set basics'],
+    resources:[R.striver, V(R.abdul, 'Video #45 (Dijkstra Algorithm) and #17 (Disjoint Set Data Structure)')],
+    tasks:['Solve 4-5 problems'] },
+  { d:26, dow:3, cat:'graph', label:'DP part 1',
+    topics:['1D DP: climbing stairs, house robber, coin change','Memoization vs tabulation'],
+    resources:[R.striver, V(R.abdul, 'Video #46: "Principle of Optimality - Dynamic Programming Introduction"')],
+    tasks:['Solve 5-6 problems'] },
+  { d:27, dow:4, cat:'graph', label:'DP part 2',
+    topics:['2D DP: unique paths, longest common subsequence, edit distance'],
+    resources:[R.striver, V(R.abdul, 'Video #60: "Longest Common Subsequence (LCS) - Recursion Dynamic Programming"')],
+    tasks:['Solve 5-6 problems'] },
+  { d:28, dow:5, cat:'graph', label:'DP part 3',
+    topics:['Knapsack variants (0/1 knapsack, subset sum)','Matrix chain-type problems'],
+    resources:[R.striver, V(R.abdul, 'Videos #54–55 (Knapsack, two methods) and #50–52 (Matrix Chain Multiplication)')],
+    tasks:['Solve 4-5 problems'] },
+  { d:29, dow:6, cat:'fin', label:'Tries & bit manipulation',
+    topics:['Tries','XOR tricks','Single number problem','Count set bits'],
+    resources:[R.striver, R.leetcode],
+    tasks:['Solve 5-6 problems'] },
+  { d:30, dow:0, cat:'fin', label:'Full mock revision',
+    topics:['Pick 2 problems from every topic covered this month: arrays, linked lists, trees, graphs, DP'],
+    resources:[R.leetcode],
+    tasks:['Solve them cold, timed, with no hints — simulate real practice/interview pressure'] },
+  { d:31, dow:1, cat:'fin', label:'Reflect & plan ahead',
+    topics:['Review the whole month'],
+    resources:[R.striver, R.neetcode],
+    tasks:['List topics you\'re confident in and topics needing more reps','Start a habit sheet for September (NeetCode 150 or Striver SDE sheet) — a month builds the foundation, mastery needs ongoing practice'] }
+];
+
+const TOTAL_DAYS = july.length + august.length;
+const STORAGE_KEY = 'dsa-roadmap-progress';
+
+function loadProgress() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch (e) {
+    return {};
+  }
+}
+
+function saveProgress(progress) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+  } catch (e) {
+    // storage unavailable, ignore
+  }
+}
+
+let progress = loadProgress();
+let currentDayKey = null;
+
+function dayKey(monthName, d) {
+  return `${monthName.toLowerCase()}-${d}`;
+}
+
+function updateProgressBar() {
+  const doneCount = Object.values(progress).filter(Boolean).length;
+  const pct = Math.round((doneCount / TOTAL_DAYS) * 100);
+  document.getElementById('progressCount').textContent = `${doneCount} / ${TOTAL_DAYS} days done`;
+  document.getElementById('progressFill').style.width = `${pct}%`;
+}
+
+function setDayComplete(key, cellEl, isComplete) {
+  progress[key] = isComplete;
+  saveProgress(progress);
+  if (cellEl) cellEl.classList.toggle('completed', isComplete);
+  updateProgressBar();
+}
+
+function renderMonth(gridId, days, monthName) {
+  const grid = document.getElementById(gridId);
+  const firstDow = days[0].dow;
+  for (let i = 0; i < firstDow; i++) {
+    const blank = document.createElement('div');
+    blank.className = 'day blank';
+    grid.appendChild(blank);
+  }
+  days.forEach(day => {
+    const key = dayKey(monthName, day.d);
+    const isDone = !!progress[key];
+    const cell = document.createElement('div');
+    cell.className = `day cat-${day.cat}${isDone ? ' completed' : ''}`;
+    cell.tabIndex = 0;
+    cell.dataset.key = key;
+    cell.innerHTML = `
+      <div class="top-row">
+        <span class="num">${day.d}</span>
+        <input type="checkbox" class="day-check" aria-label="Mark ${monthName} ${day.d} as done" ${isDone ? 'checked' : ''}>
+      </div>
+      <span class="label">${day.label}</span>`;
+
+    const checkbox = cell.querySelector('.day-check');
+    checkbox.addEventListener('click', e => e.stopPropagation());
+    checkbox.addEventListener('change', e => {
+      setDayComplete(key, cell, e.target.checked);
+      if (currentDayKey === key) {
+        document.getElementById('modalCheck').checked = e.target.checked;
+        updateModalCheckLabel(e.target.checked);
+      }
+    });
+
+    cell.addEventListener('click', () => openModal(day, monthName));
+    cell.addEventListener('keydown', e => { if (e.key === 'Enter') openModal(day, monthName); });
+    grid.appendChild(cell);
+  });
+}
+
+function updateModalCheckLabel(isDone) {
+  document.getElementById('modalCheckLabel').textContent = isDone ? 'Done — nice work' : 'Mark this day as done';
+}
+
+function openModal(day, monthName) {
+  const c = cat[day.cat];
+  const key = dayKey(monthName, day.d);
+  currentDayKey = key;
+
+  document.getElementById('modalEyebrow').textContent = c.label;
+  document.getElementById('modalEyebrow').style.background = c.bg;
+  document.getElementById('modalEyebrow').style.color = c.text;
+  document.getElementById('modalTitle').textContent = `${monthName} ${day.d} — ${day.label}`;
+
+  const isDone = !!progress[key];
+  document.getElementById('modalCheck').checked = isDone;
+  updateModalCheckLabel(isDone);
+
+  const topicsEl = document.getElementById('modalTopics');
+  topicsEl.innerHTML = day.topics.map(t => `<li>${t}</li>`).join('');
+
+  const resEl = document.getElementById('modalResources');
+  resEl.innerHTML = day.resources.map(r =>
+    `<div class="resource-item"><span class="resource-name">${r.name}${r.note ? `<br><span class="resource-note">${r.note}</span>` : ''}</span><a href="${r.url}" target="_blank" rel="noopener">Open ↗</a></div>`
+  ).join('');
+
+  const tasksEl = document.getElementById('modalTasks');
+  tasksEl.innerHTML = day.tasks.map(t => `<li>${t}</li>`).join('');
+
+  document.getElementById('overlay').classList.add('open');
+}
+
+document.getElementById('modalCheck').addEventListener('change', e => {
+  if (!currentDayKey) return;
+  const cellEl = document.querySelector(`.day[data-key="${currentDayKey}"]`);
+  setDayComplete(currentDayKey, cellEl, e.target.checked);
+  updateModalCheckLabel(e.target.checked);
+});
+
+document.getElementById('resetBtn').addEventListener('click', () => {
+  if (!confirm('Reset all progress? This clears every checked day.')) return;
+  progress = {};
+  saveProgress(progress);
+  document.querySelectorAll('.day').forEach(cell => {
+    cell.classList.remove('completed');
+    const cb = cell.querySelector('.day-check');
+    if (cb) cb.checked = false;
+  });
+  updateProgressBar();
+});
+
+document.getElementById('closeBtn').addEventListener('click', () => {
+  document.getElementById('overlay').classList.remove('open');
+});
+document.getElementById('overlay').addEventListener('click', e => {
+  if (e.target.id === 'overlay') document.getElementById('overlay').classList.remove('open');
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.getElementById('overlay').classList.remove('open');
+});
+
+renderMonth('julGrid', july, 'July');
+renderMonth('augGrid', august, 'August');
+updateProgressBar();
+</script>
+
+</body>
+</html>
